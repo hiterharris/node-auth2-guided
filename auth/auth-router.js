@@ -3,14 +3,14 @@ const bcrypt = require('bcryptjs');
 
 const Users = require('../users/users-model.js');
 
-// for endpoints beginning with /api/auth
 router.post('/register', (req, res) => {
   let user = req.body;
-  const hash = bcrypt.hashSync(user.password, 10); // 2 ^ n
+  const hash = bcrypt.hashSync(user.password, 10);
   user.password = hash;
 
   Users.add(user)
     .then(saved => {
+      req.session.loggedIn = true;
       res.status(201).json(saved);
     })
     .catch(error => {
@@ -25,6 +25,8 @@ router.post('/login', (req, res) => {
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(password, user.password)) {
+        req.session.loggedIn = true;
+        req.session.username = user.username;
         res.status(200).json({
           message: `Welcome ${user.username}!`,
         });
