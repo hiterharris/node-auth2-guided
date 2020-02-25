@@ -39,4 +39,18 @@ router.post('/login', (req, res) => {
     });
 });
 
+router.get('/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(error => {
+      if(error) {
+        res.status(500).json(error)
+      } else {
+        res.status(200).json({message: 'Goodbye!'})
+      }
+    });
+  } else {
+    res.status(200).json({message: 'Goodbye!'})
+  }
+})
+
 module.exports = router;
